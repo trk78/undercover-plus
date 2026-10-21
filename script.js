@@ -1,4 +1,5 @@
 // script.js
+const STATS_ENDPOINT = "https://compteurs.timeo-jeannin.workers.dev";
 
 // --- AI CONFIG ---
 // The Gemini key does NOT live here: it is server-side, in the Cloudflare Worker.
@@ -450,6 +451,8 @@ function backToSetup() {
 
 // --- GAME LOGIC ---
 function setupGame() {
+    // Ignore repeated launches while the same game is already on screen.
+    if (document.getElementById('screen-setup').classList.contains('hidden')) return;
     const t = translations[currentLang];
     const nbUnder = settings.undercover;
     const nbWhite = settings.white;
@@ -506,6 +509,17 @@ function setupGame() {
     document.getElementById('screen-setup').classList.add('hidden');
     document.getElementById('screen-distrib').classList.remove('hidden');
     updateDistribUI();
+    if (navigator.onLine !== false) {
+        try {
+            void fetch(STATS_ENDPOINT + '/hit', {
+                method: 'POST',
+                keepalive: true,
+                credentials: 'omit',
+                referrerPolicy: 'no-referrer',
+                body: JSON.stringify({ nom: 'undercover-joueurs', n: currentPlayers.length })
+            }).catch(() => {});
+        } catch { /* Statistics must never interrupt a game. */ }
+    }
 }
 
 let currentPlayerIndex = 0;
