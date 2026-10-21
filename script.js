@@ -516,7 +516,7 @@ function setupGame() {
                 keepalive: true,
                 credentials: 'omit',
                 referrerPolicy: 'no-referrer',
-                body: JSON.stringify({ nom: 'undercover-joueurs', n: currentPlayers.length })
+                body: JSON.stringify({ nom: 'undercover-parties' })
             }).catch(() => {});
         } catch { /* Statistics must never interrupt a game. */ }
     }
